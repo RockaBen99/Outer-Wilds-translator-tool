@@ -1,5 +1,7 @@
 import cv2
 import pytesseract
+#from translate import Translator
+import deepl
 
 pytesseract.pytesseract.tesseract_cmd = r"/usr/bin/tesseract"
 
@@ -14,10 +16,22 @@ text = pytesseract.image_to_string(img)
 print(text)
 
 # Return each detected character and their bounding boxes
-boxes = pytesseract.image_to_boxes(img)
-print(boxes)
+#boxes = pytesseract.image_to_boxes(img)
+#print(boxes)
 
 
 # Show the output
-cv2.imshow("Output", img)
-cv2.waitKey(0)
+#cv2.imshow("Output", img)
+#cv2.waitKey(0)
+
+
+
+# OLD Translate text
+#translator = Translator(to_lang='fr')
+#translation = translator.translate("I am called Benedict")
+#print(translation)
+
+# Translate text
+translator = deepl.Translator("b9ff2aae-ca1f-e192-56ae-a8c7faa94924:fx")
+result = translator.translate_text(text, target_lang="EN")
+print(result)
