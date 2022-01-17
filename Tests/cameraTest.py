@@ -61,10 +61,11 @@ while running:
     box_h = display_hat.HEIGHT
 
     if buttonX.is_pressed:
-        os.system("libcamera-jpeg -n -o photo.jpg")
+        #os.system("libcamera-jpeg -n -o photo.jpg") # OS >= 11:Bullseye
+        os.system('raspistill -o photo.jpg') # OS <= 10:Buster
         img = pygame.image.load('photo.jpg')
         img = pygame.transform.rotate(img, 90)
-        img = pygame.transform.scale(img, (box_w,box_h))
+        img = pygame.transform.scale(img, (box_h, int(2592//(1944/box_h))))
     screen.blit(img, (0,0))
 
     update_display()
