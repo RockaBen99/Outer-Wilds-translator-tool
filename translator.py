@@ -1,37 +1,83 @@
+##!/usr/bin/env python3
+import os
+import sys
+import signal
+import pygame
 import cv2
 import pytesseract
-#from translate import Translator
 import deepl
-import os
 
-pytesseract.pytesseract.tesseract_cmd = r"/usr/bin/tesseract"
+from displayhatmini import DisplayHATMini
 
-# Reading image
-img = cv2.imread('photo.jpg')
-# Convert to RGB
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+from gpiozero import Button
+buttonA = Button(5)
+buttonB = Button(6)
+buttonX = Button(16)
+buttonY = Button(24)
 
+img = pygame.image.load('photo.jpg')
 
-# Detect text from image
-text = pytesseract.image_to_string(img)
-print(text)
-
-# Return each detected character and their bounding boxes
-#boxes = pytesseract.image_to_boxes(img)
-#print(boxes)
-
-# Show the output
-#cv2.imshow("Output", img)
-#cv2.waitKey(0)
+print("""Display HAT Mini: Basic Pygame Demo""")
 
 
+def _exit(sig, frame):
+    global running
+    running = False
+    print("\nExiting!...\n")
 
-# OLD Translate text
-#translator = Translator(to_lang='fr')
-#translation = translator.translate("I am called Benedict")
-#print(translation)
 
-# Translate text
-translator = deepl.Translator("b9ff2aae-ca1f-e192-56ae-a8c7faa94924:fx")
-result = translator.translate_text(text, target_lang="EN-GB")
-print("\n\n\n\n\n\n\n\n"+str(result))
+def update_display():
+    display_hat.st7789.set_window()
+    # Grab the pygame screen as a bytes object
+    pixelbytes = pygame.transform.rotate(screen, 180).convert(16, 0).get_buffer()
+    # Lazy (slow) byteswap:
+    pixelbytes = bytearray(pixelbytes)
+    pixelbytes[0::2], pixelbytes[1::2] = pixelbytes[1::2], pixelbytes[0::2]
+    # Bypass the ST7789 PIL image RGB888->RGB565 conversion
+    for i in range(0, len(pixelbytes), 4096):
+        display_hat.st7789.data(pixelbytes[i:i + 4096])
+
+
+display_hat = DisplayHATMini(None)
+
+os.putenv('SDL_VIDEODRIVER', 'dummy')
+pygame.display.init()  # Need to init for .convert() to work
+screen = pygame.Surface((display_hat.WIDTH, display_hat.HEIGHT))
+
+signal.signal(signal.SIGINT, _exit)
+
+running = True
+
+def takePhoto():
+    os.system("libcamera-jpeg -n -o photo.jpg")
+    img = pygame.image.load('photo.jpg')
+    img = pygame.transform.rotate(img, 90)
+    img = pygame.transform.scale(img, (display_hat.HEIGHT, int(2592//(1944/display_hat.HEIGHT))))
+    mode = "photo"
+    return img
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            break
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+                break
+
+    # Clear the screen
+    screen.fill((0, 0, 0))
+
+    box_w = display_hat.WIDTH
+    box_h = display_hat.HEIGHT
+
+    if buttonX.is_pressed:
+        img = takePhoto()
+    screen.blit(img, (0,0))
+
+    update_display()
+
+
+pygame.quit()
+sys.exit(0)
