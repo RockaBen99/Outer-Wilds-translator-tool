@@ -6,6 +6,7 @@ import pygame
 import cv2
 import pytesseract
 import deepl
+import distro
 
 from displayhatmini import DisplayHATMini
 
@@ -20,15 +21,16 @@ buttonY = Button(24)
 PHOTO_PATH = 'photo.jpg'
 
 def takePhoto(photo_path):
-    #os.system('libcamera-jpeg -n -o '+photo_path) # OS version >= 11:Bullseye
-    os.system('raspistill -o '+ photo_path) # OS <= 10:Buster
+    if int(distro.linux_distribution()[1]) >= 11:
+        os.system('libcamera-jpeg -t 1 -n -o '+photo_path+' --width '+str(display_hat.HEIGHT*10)+' --height '+str(display_hat.WIDTH*10)) # OS version >= 11:Bullseye
+    else:
+        os.system('raspistill -n -o '+ photo_path) # OS <= 10:Buster
     img = pygame.image.load(photo_path)
     img = pygame.transform.rotate(img, 90)
-    img = pygame.transform.scale(img, (display_hat.HEIGHT, int(2592//(1944/display_hat.HEIGHT))))
+    img = pygame.transform.scale(img, (display_hat.WIDTH, display_hat.HEIGHT))
     mode = "showPhoto"
     return img, mode
 
-img, mode = takePhoto(PHOTO_PATH)
 
 # Tell pytesseract where tesseract is
 pytesseract.pytesseract.tesseract_cmd = r"/usr/bin/tesseract"
@@ -41,7 +43,7 @@ def translateImage(image_path):
 
 # Detect text from image
     text = pytesseract.image_to_string(img)
-
+    print(text + '\n\n---------------\n\n')
 # Translate text
     translator = deepl.Translator("b9ff2aae-ca1f-e192-56ae-a8c7faa94924:fx")
     result = translator.translate_text(text, target_lang="EN-GB")
@@ -76,6 +78,8 @@ def update_display():
 
 display_hat = DisplayHATMini(None)
 
+img, mode = takePhoto(PHOTO_PATH)
+
 os.putenv('SDL_VIDEODRIVER', 'dummy')
 pygame.display.init()  # Need to init for .convert() to work
 screen = pygame.Surface((display_hat.WIDTH, display_hat.HEIGHT))
@@ -104,12 +108,12 @@ while running:
     if buttonX.is_pressed:
         img, mode = takePhoto(PHOTO_PATH)
     elif buttonY.is_pressed:
-        translated, mode = translateImage()
+        translated, mode = translateImage(PHOTO_PATH)
     
     if mode == 'showPhoto':
         screen.blit(img, (0,0))
     elif mode == 'showTranslated':
-        pass # Text output goes here
+        print(translated)
 
     update_display()
 
