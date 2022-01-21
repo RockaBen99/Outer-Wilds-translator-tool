@@ -20,10 +20,11 @@ buttonY = Button(24)
 
 # Constants
 PHOTO_PATH = 'photo.jpg'
+RAW_PHOTO_PATH = 'photo.dng'
 
 def takePhoto(photo_path):
     if int(distro.linux_distribution()[1]) >= 11:
-        os.system('libcamera-jpeg -t 1 -n -o '+photo_path)#+' --width '+str(display_hat.HEIGHT*10)+' --height '+str(display_hat.WIDTH*10)) # OS version >= 11:Bullseye
+        os.system('libcamera-still --raw -t 1 -n -o '+photo_path)#+' --width '+str(display_hat.HEIGHT*10)+' --height '+str(display_hat.WIDTH*10)) # OS version >= 11:Bullseye
     else:
         os.system('raspistill -n -o '+ photo_path) # OS <= 10:Buster
     img = pygame.image.load(photo_path)
@@ -112,7 +113,7 @@ while running:
     if buttonX.is_pressed:
         img, mode = takePhoto(PHOTO_PATH)
     elif buttonY.is_pressed:
-        translated, mode = translateImage(PHOTO_PATH)
+        translated, mode = translateImage(RAW_PHOTO_PATH)
     
     if mode == 'showPhoto':
         screen.blit(img, (0,0))
