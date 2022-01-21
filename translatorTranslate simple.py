@@ -7,7 +7,7 @@ pytesseract.pytesseract.tesseract_cmd = r"/usr/bin/tesseract"
 
 def translateImage():
 # Read image
-    img = cv2.imread('photo.jpg')
+    img = cv2.imread('testScreenshot.png')
 # Convert to RGB
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -20,3 +20,4 @@ def translateImage():
     return result
 
 translated = translateImage()
+print(translated)
