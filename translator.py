@@ -1,4 +1,4 @@
-##!/usr/bin/env python3
+#!/usr/bin/env python3
 import os
 import sys
 import signal
@@ -22,7 +22,7 @@ PHOTO_PATH = 'photo.jpg'
 
 def takePhoto(photo_path):
     if int(distro.linux_distribution()[1]) >= 11:
-        os.system('libcamera-jpeg -t 1 -n -o '+photo_path+' --width '+str(display_hat.HEIGHT*10)+' --height '+str(display_hat.WIDTH*10)) # OS version >= 11:Bullseye
+        os.system('libcamera-jpeg -t 1 -n -o '+photo_path)#+' --width '+str(display_hat.HEIGHT*10)+' --height '+str(display_hat.WIDTH*10)) # OS version >= 11:Bullseye
     else:
         os.system('raspistill -n -o '+ photo_path) # OS <= 10:Buster
     img = pygame.image.load(photo_path)
@@ -47,6 +47,7 @@ def translateImage(image_path):
 # Translate text
     translator = deepl.Translator("b9ff2aae-ca1f-e192-56ae-a8c7faa94924:fx")
     result = translator.translate_text(text, target_lang="EN-GB")
+    print(result)
     mode = "showTranslated"
     return result, mode
 
@@ -113,7 +114,8 @@ while running:
     if mode == 'showPhoto':
         screen.blit(img, (0,0))
     elif mode == 'showTranslated':
-        print(translated)
+        #print(translated)
+        pass
 
     update_display()
 
