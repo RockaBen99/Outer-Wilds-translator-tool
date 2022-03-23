@@ -9,6 +9,8 @@ import deepl
 import distro
 import imutils
 
+os.system('python3 shutdown-led-simple.py &')
+
 from displayhatmini import DisplayHATMini
 
 from gpiozero import Button

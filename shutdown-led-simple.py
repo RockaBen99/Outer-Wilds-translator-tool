@@ -9,18 +9,18 @@ ledGPIO = int(sys.argv[3]) if len(sys.argv) >= 4 else 17
 
 def when_pressed():
     # start blinking with 1/2 second rate
-    led.blink(on_time=0.5, off_time=0.5)
+    ledR.blink(on_time=0.5, off_time=0.5)
 
 def when_released():
     # be sure to turn the LEDs off if we release early
-    led.off()
+    ledR.off()
 
 def shutdown():
     os.system("sudo poweroff")
 
-led = LED(ledGPIO)
-btn = Button(offGPIO, hold_time=holdTime)
-btn.when_held = shutdown
-btn.when_pressed = when_pressed
-btn.when_released = when_released
+ledR = LED(ledGPIO,)
+powerButton = Button(offGPIO, hold_time=holdTime)
+powerButton.when_held = shutdown
+powerButton.when_pressed = when_pressed
+powerButton.when_released = when_released
 pause()
