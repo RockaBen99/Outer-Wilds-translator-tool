@@ -8,6 +8,7 @@ import pytesseract
 import deepl
 import distro
 import imutils
+import INA219
 
 os.system('python3 shutdown-led-simple.py &')
 
@@ -20,13 +21,22 @@ buttonB = Button(6)
 buttonX = Button(16)
 buttonY = Button(24)
 
+ina219 = INA219.INA219(addr=0x43)
+def getChargePercent(ina219):
+    bus_voltage = ina219.getBusVoltage_V()             # voltage on V- (load side)
+    charge = (bus_voltage - 3)/1.2*100                 # charge in percent
+    if(charge > 100):charge = 100
+    elif(charge < 0):charge = 0
+    charge = int("{:3.1f}".format(charge))
+    return charge
+
 # Constants
 PHOTO_PATH = 'photo.jpg'
 RAW_PHOTO_PATH = 'photo.dng'
 
 def takePhoto(photo_path):
     if int(distro.linux_distribution()[1]) >= 11:
-        os.system('libcamera-still --raw -t 1 -n -o '+photo_path)#+' --width '+str(display_hat.HEIGHT*10)+' --height '+str(display_hat.WIDTH*10)) # OS version >= 11:Bullseye
+        os.system('libcamera-still -t 1 -n -o '+photo_path)#+' --width '+str(display_hat.HEIGHT*10)+' --height '+str(display_hat.WIDTH*10)) # OS version >= 11:Bullseye
     else:
         os.system('raspistill -n -o '+ photo_path) # OS <= 10:Buster
     img = pygame.image.load(photo_path)
