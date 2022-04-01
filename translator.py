@@ -10,7 +10,7 @@ import distro
 import imutils
 import INA219
 
-os.system('python3 shutdown-led-simple.py &')
+#os.system('python3 shutdown-led-simple.py &')
 
 from displayhatmini import DisplayHATMini
 
@@ -110,6 +110,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            buttonA.close()
+            buttonB.close()
+            buttonX.close()
+            buttonY.close()
             break
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
