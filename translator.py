@@ -55,6 +55,7 @@ def translateImage(image_path):
 # Convert to RGB
 
     img = imutils.rotate_bound(img, angle=-90)
+    cv2.imwrite("rotated.jpg", img)
     
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -130,7 +131,7 @@ while running:
     if buttonX.is_pressed:
         img, mode = takePhoto(PHOTO_PATH)
     elif buttonY.is_pressed:
-        translated, mode = translateImage(RAW_PHOTO_PATH)
+        translated, mode = translateImage(PHOTO_PATH)
     
     if mode == 'showPhoto':
         screen.blit(img, (0,0))
