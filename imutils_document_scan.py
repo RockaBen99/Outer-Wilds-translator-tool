@@ -1,5 +1,5 @@
 # import the necessary packages
-from pyimagesearch.transform import four_point_transform
+from pyimagesearch import four_point_transform
 from skimage.filters import threshold_local
 import numpy as np
 import argparse
@@ -9,7 +9,7 @@ import imutils
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required = True,
-	help = "Path to the image to be scanned")
+    help = "Path to the image to be scanned")
 args = vars(ap.parse_args())
 
 # load the image and compute the ratio of the old height
@@ -40,15 +40,15 @@ cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:5]
 
 # loop over the contours
 for c in cnts:
-	# approximate the contour
-	peri = cv2.arcLength(c, True)
-	approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+    # approximate the contour
+    peri = cv2.arcLength(c, True)
+    approx = cv2.approxPolyDP(c, 0.02 * peri, True)
 
-	# if our approximated contour has four points, then we
-	# can assume that we have found our screen
-	if len(approx) == 4:
-		screenCnt = approx
-		break
+    # if our approximated contour has four points, then we
+    # can assume that we have found our screen
+    if len(approx) == 4:
+        screenCnt = approx
+        break
 
 # show the contour (outline) of the piece of paper
 print("STEP 2: Find contours of paper")
